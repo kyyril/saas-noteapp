@@ -1,11 +1,7 @@
 import Link from "next/link";
 import ThemeToggle from "./ThemeToggle";
 import { Button } from "./ui/button";
-import {
-  RegisterLink,
-  LoginLink,
-  LogoutLink,
-} from "@kinde-oss/kinde-auth-nextjs/components";
+import { LoginLink, LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 export async function Navbar() {
@@ -29,9 +25,6 @@ export async function Navbar() {
           <LoginLink>
             <Button variant={"secondary"}>SignIn</Button>
           </LoginLink>
-          <RegisterLink>
-            <Button>SignUp</Button>
-          </RegisterLink>
         </div>
       )}
     </nav>
