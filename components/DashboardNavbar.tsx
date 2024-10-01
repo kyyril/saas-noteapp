@@ -1,26 +1,10 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { CreditCardIcon, HomeIcon, icons, Settings } from "lucide-react";
+import { CreditCardIcon, HomeIcon, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { navItem } from "./UserNav";
 
-export const navItem = [
-  {
-    name: "Home",
-    href: "/dashboard",
-    icon: HomeIcon,
-  },
-  {
-    name: "Billings",
-    href: "/dashboard/billings",
-    icon: CreditCardIcon,
-  },
-  {
-    name: "Settings",
-    href: "/dashboard/settings",
-    icon: Settings,
-  },
-];
 export function DashboardNav() {
   const pathname = usePathname();
   return (
