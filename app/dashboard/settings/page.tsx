@@ -62,7 +62,7 @@ export default async function SettingPage() {
     <div className="grid items-start gap-8">
       <div className="flex items-center justify-between px-2">
         <div className="grid gap-1">
-          <h1 className="text-3xl md:text-4xl text-primary">Settings</h1>
+          <h1 className="text-3xl md:text-4xl">Settings</h1>
           <p className="text-lg text-muted-foreground">Your Profile settings</p>
         </div>
       </div>
@@ -70,7 +70,7 @@ export default async function SettingPage() {
       <Card className="bg-transparent">
         <form action={postData}>
           <CardHeader>
-            <CardTitle>General</CardTitle>
+            <CardTitle className="text-primary">General</CardTitle>
             <CardDescription>
               Provide general information about yourself. Don't forget to save.
             </CardDescription>
