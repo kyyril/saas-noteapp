@@ -68,10 +68,10 @@ export function UserNav({
                 href={item.href}
               >
                 {item.name}
+                <span className="w-5 h-4 text-primary">
+                  <item.icon />
+                </span>
               </Link>
-              <span className="w-5 h-4 text-primary">
-                <item.icon />
-              </span>
             </DropdownMenuItem>
           ))}
         </DropdownMenuGroup>
