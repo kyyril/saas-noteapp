@@ -9,7 +9,11 @@ const config: Config = {
   ],
   theme: {
     container: {
-      padding: "1rem",
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
+      },
     },
     extend: {
       colors: {
