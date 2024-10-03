@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/db";
+import { stripe } from "@/lib/stripe";
 
 async function getData({
   id,
@@ -12,7 +13,7 @@ async function getData({
   profileImage,
 }: {
   id: string;
-  email: string | undefined | null;
+  email: string;
   firstName: string | undefined | null;
   lastName: string | undefined | null;
   profileImage: string | undefined | null;
@@ -34,6 +35,18 @@ async function getData({
         id: id,
         email: email ?? "default@example.com",
         name: name,
+      },
+    });
+  }
+
+  if (!user?.stripeCostumerId) {
+    const data = await stripe.customers.create({ email: email });
+    await prisma.user.update({
+      where: {
+        id: id,
+      },
+      data: {
+        stripeCostumerId: data.id,
       },
     });
   }

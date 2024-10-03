@@ -1,14 +1,63 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
+import prisma from "@/lib/db";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getStripeSession } from "@/lib/stripe";
+import { redirect } from "next/navigation";
+import { SubscribeButtonStripe } from "@/components/SubmitButton";
 
-export default function Billings() {
-  const featureItems = [
-    { name: "lorem ipsum dolor sit amet" },
-    { name: "lorem ipsum dolor sit amet" },
-    { name: "lorem ipsum dolor sit amet" },
-    { name: "lorem ipsum dolor sit amet" },
-  ];
+const featureItems = [
+  { name: "lorem ipsum dolor sit amet" },
+  { name: "lorem ipsum dolor sit amet" },
+  { name: "lorem ipsum dolor sit amet" },
+  { name: "lorem ipsum dolor sit amet" },
+];
+
+async function getData(userId: string) {
+  const data = await prisma.subscription.findUnique({
+    where: {
+      userId: userId,
+    },
+    select: {
+      status: true,
+      user: {
+        select: {
+          stripeCostumerId: true,
+        },
+      },
+    },
+  });
+  return data;
+}
+
+export default async function Billings() {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+  const data = await getData(user?.id as string);
+
+  async function createSubscription() {
+    "use server";
+    const dbUser = await prisma.user.findUnique({
+      where: {
+        id: user?.id as string,
+      },
+      select: {
+        stripeCostumerId: true,
+      },
+    });
+    if (!dbUser?.stripeCostumerId) {
+      throw new Error("unable to get customer id");
+    }
+
+    const subscriptionUrl = await getStripeSession({
+      customerId: dbUser.stripeCostumerId,
+      domainUrl: "http://localhost:3000",
+      priceId: process.env.STRIPE_PRICE_ID as string,
+    });
+    return redirect(subscriptionUrl);
+  }
+
   return (
     <>
       <div className="flex items-center justify-between mb-9 px-2">
@@ -51,10 +100,8 @@ export default function Billings() {
                 </li>
               ))}
             </ul>
-            <form action="">
-              <Button className="w-full" type="submit">
-                Buy Now
-              </Button>
+            <form action={createSubscription}>
+              <SubscribeButtonStripe />
             </form>
           </div>
         </Card>

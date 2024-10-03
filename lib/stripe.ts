@@ -25,7 +25,7 @@ export const getStripeSession = async ({
     mode: "subscription",
     billing_address_collection: "auto",
     line_items: [{ price: priceId, quantity: 1 }],
-    payment_method_types: ["paypal"],
+    payment_method_types: ["card"],
   });
 
   return session.url as string;

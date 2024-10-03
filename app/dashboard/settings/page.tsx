@@ -1,4 +1,4 @@
-import { SubmitButton } from "@/components/SubmitButton";
+import { SubmitButtonSetting } from "@/components/SubmitButton";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -155,7 +155,7 @@ export default async function SettingPage() {
           </CardContent>
 
           <CardFooter className="flex justify-end">
-            <SubmitButton />
+            <SubmitButtonSetting />
           </CardFooter>
         </form>
       </Card>
