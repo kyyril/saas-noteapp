@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import prisma from "@/lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { revalidatePath } from "next/cache";
 
 async function getData(userId: string) {
   const data = await prisma.user.findUnique({
@@ -54,13 +55,14 @@ export default async function SettingPage() {
         colorScheme: colorScheme ?? undefined,
       },
     });
+    revalidatePath("/", "layout");
   }
 
   return (
     <div className="grid items-start gap-8">
       <div className="flex items-center justify-between px-2">
         <div className="grid gap-1">
-          <h1 className="text-3xl md:text-4xl">Settings</h1>
+          <h1 className="text-3xl md:text-4xl text-primary">Settings</h1>
           <p className="text-lg text-muted-foreground">Your Profile settings</p>
         </div>
       </div>
