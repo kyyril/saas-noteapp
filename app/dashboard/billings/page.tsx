@@ -1,5 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
 import prisma from "@/lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
@@ -23,7 +29,7 @@ async function getData(userId: string) {
       status: true,
       user: {
         select: {
-          stripeCostumerId: true,
+          stripeCustomerId: true,
         },
       },
     },
@@ -31,31 +37,56 @@ async function getData(userId: string) {
   return data;
 }
 
-export default async function Billings() {
+export default async function BillingPage() {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
-  const data = await getData(user?.id as string);
+  const data = await getData(user?.id);
 
   async function createSubscription() {
     "use server";
+
     const dbUser = await prisma.user.findUnique({
       where: {
-        id: user?.id as string,
+        id: user?.id,
       },
       select: {
-        stripeCostumerId: true,
+        stripeCustomerId: true,
       },
     });
-    if (!dbUser?.stripeCostumerId) {
-      throw new Error("unable to get customer id");
+
+    if (!dbUser?.stripeCustomerId) {
+      throw new Error("Unable to get customer id");
     }
 
     const subscriptionUrl = await getStripeSession({
-      customerId: dbUser.stripeCostumerId,
+      customerId: dbUser.stripeCustomerId,
       domainUrl: "http://localhost:3000",
       priceId: process.env.STRIPE_PRICE_ID as string,
     });
     return redirect(subscriptionUrl);
+  }
+
+  if (data?.status === "active") {
+    return (
+      <div className="grid items-start gap-8">
+        <div className="flex flex-row gap-2">
+          <CheckCircle className="h-6 w-6 text-primary" />
+          <p className="text-xl font-semibold text-primary">
+            Active Subscription
+          </p>
+        </div>
+        <div className="flex items-center justify-between px-2"></div>
+        <Card className="w-full lg:w-2/3">
+          <CardHeader>
+            <CardTitle>Edit Subscription</CardTitle>
+            <CardDescription>
+              Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+              Voluptate blanditiis necessitatibus et, aliquam fuga deleniti!
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
   }
 
   return (

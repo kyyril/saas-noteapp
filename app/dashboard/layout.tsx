@@ -24,7 +24,7 @@ async function getData({
     },
     select: {
       id: true,
-      stripeCostumerId: true,
+      stripeCustomerId: true,
     },
   });
 
@@ -39,14 +39,14 @@ async function getData({
     });
   }
 
-  if (!user?.stripeCostumerId) {
+  if (!user?.stripeCustomerId) {
     const data = await stripe.customers.create({ email: email });
     await prisma.user.update({
       where: {
         id: id,
       },
       data: {
-        stripeCostumerId: data.id,
+        stripeCustomerId: data.id,
       },
     });
   }
