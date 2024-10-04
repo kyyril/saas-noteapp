@@ -9,9 +9,9 @@ import {
 import { CheckCircle } from "lucide-react";
 import prisma from "@/lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { getStripeSession } from "@/lib/stripe";
+import { getStripeSession, stripe } from "@/lib/stripe";
 import { redirect } from "next/navigation";
-import { SubscribeButtonStripe } from "@/components/SubmitButton";
+import { PortalStripe, SubscribeButtonStripe } from "@/components/SubmitButton";
 
 const featureItems = [
   { name: "lorem ipsum dolor sit amet" },
@@ -66,6 +66,14 @@ export default async function BillingPage() {
     return redirect(subscriptionUrl);
   }
 
+  async function createcustomerPortal() {
+    "use server";
+    const session = await stripe.billingPortal.sessions.create({
+      customer: data?.user.stripeCustomerId as string,
+      return_url: "http://localhost:3000/dashboard",
+    });
+    return redirect(session.url);
+  }
   if (data?.status === "active") {
     return (
       <div className="grid items-start gap-8">
@@ -84,6 +92,11 @@ export default async function BillingPage() {
               Voluptate blanditiis necessitatibus et, aliquam fuga deleniti!
             </CardDescription>
           </CardHeader>
+          <CardContent>
+            <form action={createcustomerPortal}>
+              <PortalStripe />
+            </form>
+          </CardContent>
         </Card>
       </div>
     );
