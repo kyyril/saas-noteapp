@@ -4,7 +4,6 @@ import { Button } from "./ui/button";
 import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { UserNav } from "./UserNav";
-import { User } from "lucide-react";
 
 export async function Navbar() {
   const { isAuthenticated, getUser } = getKindeServerSession();

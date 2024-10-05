@@ -13,7 +13,7 @@ export default function SuccessPage() {
         <CardContent>
           <h1 className="font-bold">Subscription Successful</h1>
           <p className="text-sm text-muted-foreground">
-            Congratulations, you've made it!
+            Congratulations, youve made it!
           </p>
           <Link href={"/dashboard"}>
             <Button className="mt-4 w-full">

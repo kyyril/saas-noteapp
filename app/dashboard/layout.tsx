@@ -11,7 +11,6 @@ async function getData({
   email,
   firstName,
   lastName,
-  profileImage,
 }: {
   id: string;
   email: string;

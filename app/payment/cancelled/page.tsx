@@ -13,7 +13,7 @@ export default function CancellPage() {
         <CardContent>
           <h1 className="font-bold">Subscription Unsuccessful</h1>
           <p className="text-sm text-muted-foreground">
-            Don't worry, let's give it another shot!
+            Dont worry, lets give it another shot!
           </p>
           <Link href={"/dashboard"}>
             <Button className="mt-4 w-full">

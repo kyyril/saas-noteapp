@@ -14,7 +14,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -72,7 +71,7 @@ export default async function SettingPage() {
           <CardHeader>
             <CardTitle className="text-primary">General</CardTitle>
             <CardDescription>
-              Provide general information about yourself. Don't forget to save.
+              Provide general information about yourself. Dont forget to save.
             </CardDescription>
           </CardHeader>
 

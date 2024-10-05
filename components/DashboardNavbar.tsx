@@ -1,6 +1,5 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { CreditCardIcon, HomeIcon, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { navItem } from "./UserNav";
