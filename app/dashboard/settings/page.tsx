@@ -1,5 +1,4 @@
 import { SubmitButtonSetting } from "@/components/SubmitButton";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -21,9 +20,10 @@ import {
 } from "@/components/ui/select";
 import prisma from "@/lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_noStore as noStore } from "next/cache";
 
 async function getData(userId: string) {
+  noStore();
   const data = await prisma.user.findUnique({
     where: {
       id: userId,

@@ -2,18 +2,24 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import prisma from "@/lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { Edit, NotebookIcon, Trash2 } from "lucide-react";
+import { Edit, NotebookIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { revalidatePath } from "next/cache";
 import { DeleteNote } from "@/components/SubmitButton";
+import { revalidatePath, unstable_noStore as noStore } from "next/cache";
 
 async function getData(userId: string) {
-  const data = await prisma.notes.findMany({
+  noStore();
+  const data = await prisma.user.findUnique({
     where: {
-      userId: userId,
+      id: userId,
     },
-    orderBy: {
-      createdAt: "desc",
+    select: {
+      Notes: true,
+      Subscription: {
+        select: {
+          status: true,
+        },
+      },
     },
   });
   return data;
@@ -43,12 +49,18 @@ export default async function Dashboard() {
           </p>
         </div>
         <div>
-          <Button asChild>
-            <Link href={"/dashboard/new"}>Create a new Note</Link>
-          </Button>
+          {data?.Subscription?.status === "active" ? (
+            <Button asChild>
+              <Link href={"/dashboard/new"}>Create a new Note</Link>
+            </Button>
+          ) : (
+            <Button asChild>
+              <Link href={"/dashboard/billings"}>Create a new Note</Link>
+            </Button>
+          )}
         </div>
       </div>
-      {data.length < 1 ? (
+      {data?.Notes.length == 0 ? (
         <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center animate-in fade-in-50">
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
             <NotebookIcon className="w-10 h-10 text-primary" />
@@ -63,7 +75,7 @@ export default async function Dashboard() {
         </div>
       ) : (
         <div className="flex flex-col gap-y-4">
-          {data.map((item) => (
+          {data?.Notes.map((item) => (
             <Card
               key={item.id}
               className="flex items-center justify-between p-4"

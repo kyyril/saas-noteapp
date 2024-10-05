@@ -61,6 +61,7 @@ export function DeleteNote() {
           size={"icon"}
           type="submit"
           className="w-fit"
+          disabled
         >
           <Loader className="mr-1 animate-spin w-4 h-4" />
         </Button>
