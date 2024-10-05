@@ -5,6 +5,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { Edit, NotebookIcon, Trash2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { revalidatePath } from "next/cache";
+import { DeleteNote } from "@/components/SubmitButton";
 
 async function getData(userId: string) {
   const data = await prisma.notes.findMany({
@@ -86,7 +87,7 @@ export default async function Dashboard() {
                 <form action={deleteNote}>
                   <input type="hidden" name="noteId" value={item.id} />
                   <Button variant={"destructive"} size={"icon"} type="submit">
-                    <Trash2 className="h-4 w-4" />
+                    <DeleteNote />
                   </Button>
                 </form>
               </div>
