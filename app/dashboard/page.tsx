@@ -1,7 +1,86 @@
-export default function Dashboard() {
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import prisma from "@/lib/db";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { Edit, NotebookIcon, Trash2 } from "lucide-react";
+import { Card } from "@/components/ui/card";
+
+async function getData(userId: string) {
+  const data = await prisma.notes.findMany({
+    where: {
+      userId: userId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+  return data;
+}
+export default async function Dashboard() {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+  const data = await getData(user?.id as string);
   return (
-    <div>
-      <h1>halo Dashboard</h1>
+    <div className="grid items-start gap-y-8">
+      <div className="flex items-center justify-between px-2">
+        <div className="grid gap-1">
+          <h1 className="text-3xl md:text-4xl">Notes</h1>
+          <p className="text-lg text-muted-foreground">
+            Hare You can see and create new notes
+          </p>
+        </div>
+        <div>
+          <Button asChild>
+            <Link href={"/dashboard/new"}>Create a new Note</Link>
+          </Button>
+        </div>
+      </div>
+      {data.length < 1 ? (
+        <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center animate-in fade-in-50">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
+            <NotebookIcon className="w-10 h-10 text-primary" />
+          </div>
+          <p className="mt-6 text-semibold text-xl mx-auto text-center">
+            You dont have any notes created!
+          </p>
+          <p className="mt-3 text-muted-foreground text-lg mx-auto text-center">
+            You currently dont have any notes. please create some so that you
+            can see them right here.
+          </p>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-y-4">
+          {data.map((item) => (
+            <Card
+              key={item.id}
+              className="flex items-center justify-between p-4"
+            >
+              <div className="">
+                <h2 className="font-semibold text-lg text-primary">
+                  {item.title}
+                </h2>
+                <p className="text-muted-foreground text-sm">
+                  {new Intl.DateTimeFormat("en-US", {
+                    dateStyle: "short",
+                  }).format(new Date(item.createdAt))}
+                </p>
+              </div>
+              <div className="flex gap-x-4">
+                <Link href={`/dashboard/new/${item.id}`}>
+                  <Button variant={"outline"} size={"icon"}>
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                </Link>
+                <form action="">
+                  <Button variant={"destructive"} size={"icon"}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </form>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

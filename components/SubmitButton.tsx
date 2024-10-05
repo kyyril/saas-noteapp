@@ -13,7 +13,7 @@ export function SubmitButtonSetting() {
           Wait..
         </Button>
       ) : (
-        <Button type="submit">Submit</Button>
+        <Button type="submit">Save</Button>
       )}
     </>
   );
