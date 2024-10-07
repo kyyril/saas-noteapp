@@ -50,12 +50,19 @@ export default async function Dashboard() {
         </div>
         <div>
           {data?.Subscription?.status === "active" ? (
+            // Jika status subscription aktif, user bisa membuat note tanpa batas
             <Button asChild>
               <Link href={"/dashboard/new"}>Create a new Note</Link>
             </Button>
-          ) : (
+          ) : // Cek apakah data.notes didefinisikan dan jika jumlah notes sudah mencapai 5, arahkan ke halaman billing
+          Array.isArray(data?.Notes) && data?.Notes.length >= 5 ? (
             <Button asChild>
-              <Link href={"/dashboard/billings"}>Create a new Note</Link>
+              <Link href={"/dashboard/billings"}>Subscription required</Link>
+            </Button>
+          ) : (
+            // Jika belum mencapai 5 notes, user bisa membuat note baru
+            <Button asChild>
+              <Link href={"/dashboard/new"}>Create a new Note</Link>
             </Button>
           )}
         </div>
@@ -74,7 +81,7 @@ export default async function Dashboard() {
           </p>
         </div>
       ) : (
-        <div className="flex flex-col gap-y-4">
+        <div className="flex flex-col gap-y-4 mb-8">
           {data?.Notes.map((item) => (
             <Card
               key={item.id}
@@ -84,9 +91,12 @@ export default async function Dashboard() {
                 <h2 className="font-semibold text-lg text-primary">
                   {item.title}
                 </h2>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-sm text-muted-foreground">
+                  {item.description}
+                </p>
+                <p className="text-sm mt-2">
                   {new Intl.DateTimeFormat("en-US", {
-                    dateStyle: "short",
+                    dateStyle: "medium",
                   }).format(new Date(item.createdAt))}
                 </p>
               </div>
