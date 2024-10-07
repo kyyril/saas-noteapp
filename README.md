@@ -12,7 +12,7 @@ This project is a SaaS application built with a modern tech stack including Next
 ## Tech Stack
 
 - **Next.js**: [https://nextjs.org](https://nextjs.org)
-- **Kinde**: [https://dub.sh/xeU8r3v](https://dub.sh/xeU8r3v)
+- **Kinde**: [https://dub.sh/xeU8r3v](https://kinde.com/)
 - **Tailwind CSS**: [https://tailwindcss.com](https://tailwindcss.com)
 - **Shadcn/UI**: [https://ui.shadcn.com](https://ui.shadcn.com)
 - **Stripe**: [https://stripe.com](https://stripe.com)
