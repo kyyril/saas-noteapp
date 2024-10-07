@@ -1,7 +1,5 @@
 # SaaS Application with Next.js, Stripe, Kinde, Prisma, Supabase, and Tailwind
-
-This project is a SaaS application built with a modern tech stack including Next.js 14, Stripe for payments, Kinde for authentication, Prisma for database management, Supabase for backend functionality, and Tailwind CSS for styling. The application allows users to subscribe to premium services and manage their notes.
-
+This project is a SaaS application built with a modern tech stack including Next.js 14, Stripe for payments, Kinde for authentication, Prisma for database management, Supabase for backend functionality, and Tailwind CSS for styling. The application allows users to subscribe to premium services and manage their notes. Free-tier users are limited to creating a maximum of 5 notes, after which they need to subscribe for unlimited access.
 ## Features
 
 - 🌐 **Next.js App Router**: Utilizes the new Next.js 14 App Router for routing and page organization.
