@@ -64,7 +64,7 @@ export function UserNav({
           {navItem.map((item, index) => (
             <DropdownMenuItem key={index}>
               <Link
-                className="w-full flex justify-between items-center"
+                className="w-full hover:bg-secondary flex justify-between items-center"
                 href={item.href}
               >
                 {item.name}
@@ -77,7 +77,7 @@ export function UserNav({
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <LogoutLink className="w-full flex justify-between items-center">
+          <LogoutLink className="w-full hover:bg-secondary flex justify-between items-center">
             Log out{" "}
             <span className="w-5 h-4 text-primary">
               <DoorClosed />
