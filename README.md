@@ -1,21 +1,7 @@
 # SaaS Application with Next.js, Stripe, Kinde, Prisma, Supabase, and Tailwind
-
-This project is a SaaS application built with a modern tech stack including Next.js 14, Stripe for payments, Kinde for authentication, Prisma for database management, Supabase for backend functionality, and Tailwind CSS for styling. The application allows users to subscribe to premium services and manage their notes.
+This project is a SaaS application built with a modern tech stack including Next.js 14, Stripe for payments, Kinde for authentication, Prisma for database management, Supabase for backend functionality, and Tailwind CSS for styling. The application allows users to subscribe to premium services and manage their notes. Free-tier users are limited to creating a maximum of 5 notes, after which they need to subscribe for unlimited access.
 
 ## Features
-
-- 🌐 **Next.js App Router**: Utilizes the new Next.js 14 App Router for routing and page organization.
-- 🔐 **Kinde Authentication**: Secure login and authentication with Kinde.
-- 📧 **Passwordless Authentication**: Users can log in via email with no need for passwords.
-- 🔑 **OAuth Support**: Easy login with Google and GitHub integrations.
-- 💿 **Supabase Database**: Uses Supabase as the primary database for user data and notes.
-- 💨 **Prisma ORM**: Prisma ORM handles database interactions and ensures smooth data modeling.
-- 🎨 **Tailwind CSS & Shadcn UI**: Styled with Tailwind CSS and Shadcn UI components, with customizable color schemes.
-- 💵 **Stripe for Subscriptions**: Handles payments and subscriptions for premium features.
-- 🪝 **Stripe Webhooks**: Webhooks are set up for automated Stripe event handling.
-- 😶‍🌫️ **Deployment to Vercel**: Deployed on Vercel for scalability and performance.
-
-## Pending Features
 
 - Cache Revalidation
 - Stripe Customer Portal
@@ -26,12 +12,21 @@ This project is a SaaS application built with a modern tech stack including Next
 ## Tech Stack
 
 - **Next.js**: [https://nextjs.org](https://nextjs.org)
-- **Kinde**: [https://dub.sh/xeU8r3v](https://dub.sh/xeU8r3v)
+- **Kinde**: [https://dub.sh/xeU8r3v](https://kinde.com/)
 - **Tailwind CSS**: [https://tailwindcss.com](https://tailwindcss.com)
 - **Shadcn/UI**: [https://ui.shadcn.com](https://ui.shadcn.com)
 - **Stripe**: [https://stripe.com](https://stripe.com)
 - **Prisma**: [https://prisma.io](https://prisma.io)
 - **Supabase**: [https://supabase.com](https://supabase.com)
+
+
+- 🌐 **Next.js App Router**: Utilizes the new Next.js 14 App Router for routing and page organization.
+- 🔐 **Kinde Authentication**: Secure login and authentication with Kinde.
+- 💿 **Supabase Database**: Uses Supabase as the primary database for user data and notes.
+- 💨 **Prisma ORM**: Prisma ORM handles database interactions and ensures smooth data modeling.
+- 🎨 **Tailwind CSS & Shadcn UI**: Styled with Tailwind CSS and Shadcn UI components, with customizable color schemes.
+- 💵 **Stripe for Subscriptions**: Handles payments and subscriptions for premium features.
+- 😶‍🌫️ **Deployment to Vercel**: Deployed on Vercel for scalability and performance.
 
 ## Getting Started
 
