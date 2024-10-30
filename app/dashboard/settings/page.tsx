@@ -104,7 +104,7 @@ export default async function SettingPage() {
             </div>
 
             <div className="space-y-1">
-              <Label>Color Scheme</Label>
+              <Label>Color Scheme:</Label>
               <Select name="color" defaultValue={data?.colorScheme}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="select a color.." />
