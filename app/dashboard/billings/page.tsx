@@ -14,7 +14,7 @@ import { PortalStripe, SubscribeButtonStripe } from "@/components/SubmitButton";
 import { unstable_noStore as noStore } from "next/cache";
 
 const featureItems = [
-  { name: "lorem ipsum dolor sit amet" },
+  { name: "make unlimited notes" },
   { name: "lorem ipsum dolor sit amet" },
   { name: "lorem ipsum dolor sit amet" },
   { name: "lorem ipsum dolor sit amet" },
@@ -128,7 +128,7 @@ export default async function BillingPage() {
               </h3>
             </div>
             <div className="mt-3 flex items-baseline text-4xl font-bold">
-              5$
+              1$
               <span className="text-muted-foreground text-2xl font-semibold">
                 /Month
               </span>
