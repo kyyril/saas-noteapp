@@ -1,74 +1,88 @@
-# SaaS Application with Next.js, Stripe, Kinde, Prisma, Supabase, and Tailwind
-This project is a SaaS application built with a modern tech stack including Next.js 14, Stripe for payments, Kinde for authentication, Prisma for database management, Supabase for backend functionality, and Tailwind CSS for styling. The application allows users to subscribe to premium services and manage their notes. Free-tier users are limited to creating a maximum of 5 notes, after which they need to subscribe for unlimited access.
+# SaaS NoteApp
 
-## Features
+A multi-tenant note-taking SaaS application built with Next.js 14, Supabase, Prisma, Kinde Auth, and Stripe. Features a subscription-based monetization model with custom feature gating.
 
-- Cache Revalidation
-- Stripe Customer Portal
-- Stripe Checkout Page
-- Server-side Implementation
-- CRUD for Notes (Add, View, Edit, Delete Notes)
+## Preview
+<p align="center">
+  <img src="https://res.cloudinary.com/da5ggxk01/image/upload/v1730450907/e060a763-6a49-4f82-8140-6691a486effe.png" alt="SaaS NoteApp Preview" width="100%">
+</p>
+
+## Architecture & Features
+
+- **Feature Gating & Subscriptions:** Hard limit of 5 notes for free-tier users. Integrated Stripe Checkout for premium tier upgrades and Stripe Customer Portal for self-serve subscription management.
+- **Authentication:** Route protection and session management handled via Kinde Auth.
+- **Data Management:** Full CRUD operations for notes, isolated by user scope.
+- **Performance Optimization:** Utilizes Next.js 14 App Router with Server-Side Rendering (SSR) and Cache Revalidation to keep data synchronized without client-side lag.
+- **UI & Layout:** Responsive interface built with Tailwind CSS and Shadcn UI.
 
 ## Tech Stack
 
-- **Next.js**: [https://nextjs.org](https://nextjs.org)
-- **Kinde**: [https://dub.sh/xeU8r3v](https://kinde.com/)
-- **Tailwind CSS**: [https://tailwindcss.com](https://tailwindcss.com)
-- **Shadcn/UI**: [https://ui.shadcn.com](https://ui.shadcn.com)
-- **Stripe**: [https://stripe.com](https://stripe.com)
-- **Prisma**: [https://prisma.io](https://prisma.io)
-- **Supabase**: [https://supabase.com](https://supabase.com)
+- **Framework:** Next.js 14 (App Router)
+- **Authentication:** Kinde Auth
+- **Database:** Supabase (PostgreSQL)
+- **ORM:** Prisma
+- **Payments:** Stripe
+- **Styling:** Tailwind CSS & Shadcn UI
+- **Deployment:** Vercel
 
+## Local Development Setup
 
-- 🌐 **Next.js App Router**: Utilizes the new Next.js 14 App Router for routing and page organization.
-- 🔐 **Kinde Authentication**: Secure login and authentication with Kinde.
-- 💿 **Supabase Database**: Uses Supabase as the primary database for user data and notes.
-- 💨 **Prisma ORM**: Prisma ORM handles database interactions and ensures smooth data modeling.
-- 🎨 **Tailwind CSS & Shadcn UI**: Styled with Tailwind CSS and Shadcn UI components, with customizable color schemes.
-- 💵 **Stripe for Subscriptions**: Handles payments and subscriptions for premium features.
-- 😶‍🌫️ **Deployment to Vercel**: Deployed on Vercel for scalability and performance.
+### 1. Clone the Repository
+```bash
+git clone [https://github.com/kyyril/saas-noteapp.git](https://github.com/kyyril/saas-noteapp.git)
+cd saas-noteapp
 
-## Getting Started
+```
 
-1. Clone the repository.
-2. Install dependencies using `npm install`.
-3. Set up environment variables for Stripe, Kinde, Supabase, and other services.
-4. Run the development server using `npm run dev`.
+### 2. Install Dependencies
 
+```bash
+npm install
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+```
 
-## Getting Started
+### 3. Environment Variables
 
-First, run the development server:
+Create a `.env` file in the root directory and populate it with the following keys:
+
+```env
+DATABASE_URL="postgresql://..."
+DIRECT_URL="postgresql://..."
+
+KINDE_CLIENT_ID="..."
+KINDE_CLIENT_SECRET="..."
+KINDE_ISSUER_URL="https://..."
+NEXT_PUBLIC_KINDE_REDIRECT_URL="http://localhost:3000/api/auth/success"
+NEXT_PUBLIC_KINDE_POST_LOGOUT_REDIRECT_URL="http://localhost:3000"
+
+STRIPE_API_KEY="sk_test_..."
+STRIPE_WEBHOOK_SECRET="whsec_..."
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_..."
+STRIPE_PRICE_ID_PREMIUM="price_..."
+
+```
+
+### 4. Database Migration
+
+```bash
+npx prisma db push
+
+```
+
+### 5. Start Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000` in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Database Schema
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+* **User:** Stores user identity mapped from Kinde and Stripe customer/subscription identifiers.
+* **Note:** Stores note payload (`title`, `description`) linked to a user ID.
 
-## Learn More
+```
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
