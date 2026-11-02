@@ -82,7 +82,3 @@ Open `http://localhost:3000` in your browser.
 
 * **User:** Stores user identity mapped from Kinde and Stripe customer/subscription identifiers.
 * **Note:** Stores note payload (`title`, `description`) linked to a user ID.
-
-```
-
-```
