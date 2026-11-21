@@ -6,6 +6,14 @@ Behind the scenes, the application is built with security and data isolation in 
 
 ---
 
+## Preview
+
+<p align="center">
+  <img src="https://res.cloudinary.com/da5ggxk01/image/upload/v1730450907/e060a763-6a49-4f82-8140-6691a486effe.png" alt="SaaS NoteApp Preview" width="100%">
+</p>
+
+---
+
 ## Product Features
 
 * **Note Management (CRUD)**: Create, view, edit, and delete notes from a central dashboard.
