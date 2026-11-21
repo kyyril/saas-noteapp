@@ -1,0 +1,34 @@
+name: ci
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npx tsc --noEmit
+      - run: npm run build
+        env:
+          KINDE_CLIENT_ID: dummy
+          KINDE_CLIENT_SECRET: dummy
+          KINDE_ISSUER_URL: https://dummy.kinde.com
+          KINDE_SITE_URL: http://localhost:3000
+          KINDE_POST_LOGOUT_REDIRECT_URL: http://localhost:3000
+          KINDE_POST_LOGIN_REDIRECT_URL: http://localhost:3000/dashboard
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+          DIRECT_URL: postgresql://postgres:postgres@localhost:5432/postgres
+          STRIPE_SECRET_KEY: sk_test_dummy
+          STRIPE_PRICE_ID: price_dummy
+          STRIPE_WEBHOOK_SECRET: whsec_dummy
+          ENCRYPTION_KEY: 0000000000000000000000000000000000000000000000000000000000000000

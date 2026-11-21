@@ -16,7 +16,7 @@ model User {
   colorScheme      String        @default("theme-orange")
   Subscription     Subscription?
   Notes            Notes[]
-
+  AuditLogs        AuditLog[]
 }
 
 model Subscription {
@@ -33,11 +33,29 @@ model Subscription {
 }
 
 model Notes {
-  id        String        @id @default(uuid())
-  title     String
-  description  String
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  isEncrypted Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String?
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action    String
+  details   String?
+  ipAddress String?
+  userAgent String?
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user     User?       @relation(fields: [userId], references: [id])
-  userId    String?
+}
+
+model WebhookEvent {
+  id        String   @id
+  type      String
+  createdAt DateTime @default(now())
 }

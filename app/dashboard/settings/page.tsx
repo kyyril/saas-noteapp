@@ -20,6 +20,8 @@ import {
 import prisma from "@/lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { revalidatePath, unstable_noStore as noStore } from "next/cache";
+import { recordAuditLog } from "@/lib/audit";
+import { settingsSchema } from "@/lib/schemas";
 
 async function getData(userId: string) {
   noStore();
@@ -35,6 +37,7 @@ async function getData(userId: string) {
   });
   return data;
 }
+
 export default async function SettingPage() {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
@@ -42,18 +45,40 @@ export default async function SettingPage() {
 
   async function postData(formData: FormData) {
     "use server";
-    const name = formData.get("name") as string;
-    const colorScheme = formData.get("color") as string;
+    const { getUser: getAuthUser } = getKindeServerSession();
+    const currentUser = await getAuthUser();
+
+    if (!currentUser || !currentUser.id) {
+      throw new Error("Unauthorized");
+    }
+
+    const rawData = {
+      name: formData.get("name"),
+      color: formData.get("color"),
+    };
+
+    const parsed = settingsSchema.safeParse(rawData);
+    if (!parsed.success) {
+      const errorMsg = parsed.error.issues.map((i) => i.message).join(", ");
+      throw new Error(`Validation Error: ${errorMsg}`);
+    }
 
     await prisma.user.update({
       where: {
-        id: user?.id,
+        id: currentUser.id,
       },
       data: {
-        name: name ?? undefined,
-        colorScheme: colorScheme ?? undefined,
+        name: parsed.data.name,
+        colorScheme: parsed.data.color,
       },
     });
+
+    await recordAuditLog({
+      userId: currentUser.id,
+      action: "SETTINGS_UPDATED",
+      details: `Profile updated: Name=${parsed.data.name}, Scheme=${parsed.data.color}`,
+    });
+
     revalidatePath("/", "layout");
   }
 
@@ -84,7 +109,7 @@ export default async function SettingPage() {
                   type="text"
                   id="name"
                   placeholder="Your Name..."
-                  defaultValue={data?.name ?? "default"}
+                  defaultValue={data?.name ?? ""}
                 />
               </div>
             </div>
@@ -97,7 +122,7 @@ export default async function SettingPage() {
                   type="text"
                   id="email"
                   placeholder="Your Email..."
-                  defaultValue={data?.email ?? "default"}
+                  defaultValue={data?.email ?? ""}
                   disabled
                 />
               </div>
@@ -111,7 +136,6 @@ export default async function SettingPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {/* Color options */}
                     <SelectItem value="theme-red">
                       <span className="bg-red-500 rounded-full px-5 py-1">
                         Red

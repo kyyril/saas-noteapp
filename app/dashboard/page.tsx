@@ -4,8 +4,19 @@ import prisma from "@/lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { Edit, NotebookIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { DeleteNote } from "@/components/SubmitButton";
+import { DeleteNoteDialog } from "@/components/DeleteNoteDialog";
 import { revalidatePath, unstable_noStore as noStore } from "next/cache";
+import { decrypt } from "@/lib/encryption";
+import { recordAuditLog } from "@/lib/audit";
+
+interface NoteRecord {
+  id: string;
+  title: string;
+  description: string;
+  createdAt: Date;
+  updatedAt?: Date;
+  userId?: string | null;
+}
 
 async function getData(userId: string) {
   noStore();
@@ -14,7 +25,11 @@ async function getData(userId: string) {
       id: userId,
     },
     select: {
-      Notes: true,
+      Notes: {
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
       Subscription: {
         select: {
           status: true,
@@ -22,8 +37,21 @@ async function getData(userId: string) {
       },
     },
   });
-  return data;
+
+  if (!data) return null;
+
+  // Decrypt descriptions in-memory for authenticated view
+  const decryptedNotes: NoteRecord[] = data.Notes.map((note: NoteRecord) => ({
+    ...note,
+    description: decrypt(note.description),
+  }));
+
+  return {
+    ...data,
+    Notes: decryptedNotes,
+  };
 }
+
 export default async function Dashboard() {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
@@ -31,63 +59,81 @@ export default async function Dashboard() {
 
   async function deleteNote(formData: FormData) {
     "use server";
+    const { getUser: getAuthUser } = getKindeServerSession();
+    const currentUser = await getAuthUser();
+
+    if (!currentUser || !currentUser.id) {
+      throw new Error("Unauthorized request");
+    }
+
     const noteId = formData.get("noteId") as string;
-    await prisma.notes.delete({
+
+    // Multi-tenant check: Scoped strictly to authenticated user to prevent IDOR
+    const deleted = await prisma.notes.deleteMany({
       where: {
         id: noteId,
+        userId: currentUser.id,
       },
     });
+
+    if (deleted.count > 0) {
+      await recordAuditLog({
+        userId: currentUser.id,
+        action: "NOTE_DELETED",
+        details: `Deleted note ID: ${noteId}`,
+      });
+    }
+
     revalidatePath("/dashboard");
   }
+
   return (
     <div className="grid items-start gap-y-8">
       <div className="flex items-center justify-between px-2">
         <div className="grid gap-1">
           <h1 className="text-3xl md:text-4xl">Notes</h1>
           <p className="text-lg text-muted-foreground">
-            Hare You can see and create new notes
+            Here you can see and create new notes
           </p>
         </div>
         <div>
           {data?.Subscription?.status === "active" ? (
-            // Jika status subscription aktif, user bisa membuat note tanpa batas
             <Button asChild>
               <Link href={"/dashboard/new"}>Create a new Note</Link>
             </Button>
-          ) : // Cek apakah data.notes didefinisikan dan jika jumlah notes sudah mencapai 5, arahkan ke halaman billing
-          Array.isArray(data?.Notes) && data?.Notes.length >= 5 ? (
+          ) : Array.isArray(data?.Notes) && data?.Notes.length >= 5 ? (
             <Button asChild>
               <Link href={"/dashboard/billings"}>Subscription required</Link>
             </Button>
           ) : (
-            // Jika belum mencapai 5 notes, user bisa membuat note baru
             <Button asChild>
               <Link href={"/dashboard/new"}>Create a new Note</Link>
             </Button>
           )}
         </div>
       </div>
-      {data?.Notes.length == 0 ? (
+
+      {data?.Notes.length === 0 ? (
         <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center animate-in fade-in-50">
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
             <NotebookIcon className="w-10 h-10 text-primary" />
           </div>
-          <p className="mt-6 text-semibold text-xl mx-auto text-center">
-            You dont have any notes created!
+          <p className="mt-6 font-semibold text-xl mx-auto text-center">
+            You don't have any notes created!
           </p>
           <p className="mt-3 text-muted-foreground text-lg mx-auto text-center">
-            You currently dont have any notes. please create some so that you
+            You currently don't have any notes. please create some so that you
             can see them right here.
           </p>
         </div>
       ) : (
         <div className="flex flex-col gap-y-4 mb-8">
-          {data?.Notes.map((item) => (
+          {data?.Notes.map((item: NoteRecord) => (
             <Card
               key={item.id}
               className="flex items-center justify-between p-4"
             >
-              <div className="">
+              <div>
                 <h2 className="font-semibold text-lg text-primary">
                   {item.title}
                 </h2>
@@ -106,12 +152,10 @@ export default async function Dashboard() {
                     <Edit className="h-4 w-4" />
                   </Button>
                 </Link>
-                <form action={deleteNote}>
-                  <input type="hidden" name="noteId" value={item.id} />
-                  <Button variant={"destructive"} size={"icon"} type="submit">
-                    <DeleteNote />
-                  </Button>
-                </form>
+                <DeleteNoteDialog
+                  noteId={item.id}
+                  deleteNoteAction={deleteNote}
+                />
               </div>
             </Card>
           ))}

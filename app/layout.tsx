@@ -7,9 +7,9 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { unstable_noStore as noStore } from "next/cache";
 
 export const metadata: Metadata = {
-  title: "noteApp",
+  title: "NotesApp | Secure SaaS Note Application",
   description:
-    "noteApp is a simple and intuitive SaaS platform for organizing and managing notes. With real-time syncing and easy access across devices, it helps users stay productive and organized anywhere, anytime.",
+    "NotesApp is a secure SaaS note platform featuring AES-256-GCM field encryption, zero-trust authorization, and audit trails.",
 };
 
 async function getData(userId: string) {
@@ -37,8 +37,11 @@ export default async function RootLayout({
   const data = await getData(user?.id as string);
 
   return (
-    <html lang="en">
-      <body className={`${data?.colorScheme ?? "theme-green"}`}>
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${data?.colorScheme ?? "theme-orange"}`}
+        suppressHydrationWarning
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

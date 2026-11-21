@@ -16,10 +16,13 @@ import Link from "next/link";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { redirect } from "next/navigation";
 import { revalidatePath, unstable_noStore as noStore } from "next/cache";
+import { decrypt, encrypt } from "@/lib/encryption";
+import { recordAuditLog } from "@/lib/audit";
+import { noteSchema } from "@/lib/schemas";
 
 async function getData({ userId, noteId }: { userId: string; noteId: string }) {
   noStore();
-  const data = await prisma.notes.findUnique({
+  const data = await prisma.notes.findFirst({
     where: {
       id: noteId,
       userId: userId,
@@ -30,33 +33,76 @@ async function getData({ userId, noteId }: { userId: string; noteId: string }) {
       id: true,
     },
   });
-  return data;
+
+  if (!data) return null;
+
+  return {
+    ...data,
+    description: decrypt(data.description),
+  };
 }
+
 export default async function DynamicRoutes({
   params,
 }: {
   params: { id: string };
 }) {
-  const { getUser } = await getKindeServerSession();
+  const { getUser } = getKindeServerSession();
   const user = await getUser();
+
+  if (!user || !user.id) {
+    return redirect("/");
+  }
+
   const data = await getData({ userId: user.id, noteId: params.id });
+
+  if (!data) {
+    return redirect("/dashboard");
+  }
 
   async function postData(formData: FormData) {
     "use server";
-    if (!user) throw new Error("You not allowed");
+    const { getUser: getAuthUser } = getKindeServerSession();
+    const currentUser = await getAuthUser();
 
-    const title = formData.get("title") as string;
-    const description = formData.get("description") as string;
+    if (!currentUser || !currentUser.id) {
+      throw new Error("You are not allowed");
+    }
 
-    await prisma.notes.update({
+    const rawData = {
+      title: formData.get("title"),
+      description: formData.get("description"),
+    };
+
+    const parsed = noteSchema.safeParse(rawData);
+    if (!parsed.success) {
+      const errorMsg = parsed.error.issues.map((i) => i.message).join(", ");
+      throw new Error(`Validation Error: ${errorMsg}`);
+    }
+
+    const encryptedDescription = encrypt(parsed.data.description);
+
+    // Multi-tenant safe update
+    const updated = await prisma.notes.updateMany({
       where: {
-        id: data?.id,
-        userId: user.id,
+        id: params.id,
+        userId: currentUser.id,
       },
       data: {
-        description: description,
-        title: title,
+        title: parsed.data.title,
+        description: encryptedDescription,
+        isEncrypted: true,
       },
+    });
+
+    if (updated.count === 0) {
+      throw new Error("You are not allowed");
+    }
+
+    await recordAuditLog({
+      userId: currentUser.id,
+      action: "NOTE_UPDATED",
+      details: `Updated note ID: ${params.id}`,
     });
 
     revalidatePath("/dashboard");
